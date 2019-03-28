@@ -39,7 +39,7 @@ def split_sd_file(input_filepath, filename, num_in_file):
                 number = 0
                 file_count += 1
     # Now write out the final leftovers
-    with gzip.open(os.path.join(input_filepath, prefix + "." + str(file_count) + ext), "wb") as fi:
+    with gzip.open(os.path.join(input_filepath, prefix + "." + str(file_count) + ext2 + ext), "wb") as fi:
         logger.info(f"Gzipping fragment {file_count}")
         fi.writelines(lines)
 
@@ -68,8 +68,12 @@ def pickle_one_file(input_filepath, output_filepath, filename):
     logger.info(f"Loaded in {len(molecules)} from file.")
     outfilepath = os.path.join(output_filepath, prefix + ".pkl")
     logger.info(f"Pickling {filename} to {outfilepath}")
+    # RDKit doesn't preserve properties when pickling,
+    # and this is not well documented.
+    Chem.SetDefaultPickleProperties(Chem.PropertyPickleOptions.AllProps)  
     with open(outfilepath, "wb") as outfile:
         pickle.dump(molecules, outfile, protocol=4)
+     
 
 @click.command()
 @click.argument('input_filepath', type=click.Path(exists=True))
@@ -88,7 +92,7 @@ def main(input_filepath, output_filepath):
     for file_to_load in files_to_load:
         if os.path.getsize(os.path.join(input_filepath, file_to_load + ".sd.gz")) > filesize_cutoff:
             print("Uh oh - file too big:", file_to_load)
-            fragments = split_sd_file(input_filepath, file_to_load + ".sd.gz", 100000)
+            fragments = split_sd_file(input_filepath, file_to_load + ".sd.gz", 75000)
             for i in range(fragments + 1):
                 pickle_one_file(input_filepath, output_filepath, file_to_load + "." + str(i) + ".sd.gz")
         else:
