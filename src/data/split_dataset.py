@@ -4,12 +4,13 @@ import logging
 import pickle
 import gzip
 import os
-import tracemalloc
-import linecache
 from rdkit import Chem
 from pathlib import Path
 from dotenv import find_dotenv, load_dotenv
 
+ENTRIES_PER_CHUNK = 75000
+FILESIZE_CUTOFF = 40e6
+FILES_TO_LOAD = []
 
 def split_sd_file(input_filepath, filename, num_in_file):
     """
@@ -80,19 +81,24 @@ def pickle_one_file(input_filepath, output_filepath, filename):
 @click.argument('output_filepath', type=click.Path())
 def main(input_filepath, output_filepath):
     """
-    Runs data processing scripts to turn raw data from (../raw) into
-    cleaned data ready to be analyzed (saved in ../processed).
+    Splits the data set into more managable pickled chunks,
+    and stores in the output_filepath.
+    The pickles are python lists of RDKit mol files.
+    They in theory preserve everything from the original 
+    .sd file, and expand to being much bigger than we started.
+    (2.3GB?)
+
+    Adjust the parameter ENTRIES_PER_CHUNK in the top of the file if your machine
+    has more than 8GB of RAM. For 8GB of RAM, a value of 75,000 is sane.
     """
     logger = logging.getLogger(__name__)
     logger.info('Making final data set from raw data. Warning: This will eat 7GB of RAM.')
-    files_to_load = ["curated_set_with_publication_year", "curated_set_scaffolds"]
     # We need to check if we can actually read these files without
     # catching fire and falling over.
-    filesize_cutoff = 40e6
-    for file_to_load in files_to_load:
-        if os.path.getsize(os.path.join(input_filepath, file_to_load + ".sd.gz")) > filesize_cutoff:
-            print("Uh oh - file too big:", file_to_load)
-            fragments = split_sd_file(input_filepath, file_to_load + ".sd.gz", 75000)
+    for file_to_load in FILES_TO_LOAD:
+        if os.path.getsize(os.path.join(input_filepath, file_to_load + ".sd.gz")) > FILESIZE_CUTOFF:
+            logger.info(f"Uh oh - file too big: {file_to_load}. Will split it into smaller segments.")
+            fragments = split_sd_file(input_filepath, file_to_load + ".sd.gz", ENTRIES_PER_CHUNK)
             for i in range(fragments + 1):
                 pickle_one_file(input_filepath, output_filepath, file_to_load + "." + str(i) + ".sd.gz")
         else:

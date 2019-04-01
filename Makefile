@@ -25,9 +25,15 @@ requirements: test_environment
 	$(PYTHON_INTERPRETER) -m pip install -U pip setuptools wheel
 	$(PYTHON_INTERPRETER) -m pip install -r requirements.txt
 
+FINAL_DATAFILES=./data/processed/curated_set_scaffolds.pd.pkl ./data/processed/curated_set_with_publication_year.pd.pkl
+
 ## Make Dataset
-data: requirements
-	$(PYTHON_INTERPRETER) src/data/make_dataset.py ./data/external ./data/processed/
+data: requirements $(FINAL_DATAFILES)
+	$(PYTHON_INTERPRETER) src/data/split_dataset.py ./data/external/ ./data/interim/
+	$(PYTHON_INTERPRETER) src/data/make_pandas_dataframe.py ./data/interim/ ./data/processed/
+
+%.pd.pkl: %.sd.pkl
+	echo $<
 
 ## Delete all compiled Python files
 clean:
