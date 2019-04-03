@@ -10,7 +10,7 @@ from dotenv import find_dotenv, load_dotenv
 
 ENTRIES_PER_CHUNK = 75000
 FILESIZE_CUTOFF = 40e6
-FILES_TO_LOAD = []
+FILES_TO_LOAD = ["curated_set_with_publication_year", "curated_set_scaffolds"]
 
 def split_sd_file(input_filepath, filename, num_in_file):
     """

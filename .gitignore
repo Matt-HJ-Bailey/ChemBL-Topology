@@ -5,6 +5,8 @@ __pycache__/
 # C extensions
 *.so
 
+# Output images
+*.svg
 # Distribution / packaging
 .Python
 env/
