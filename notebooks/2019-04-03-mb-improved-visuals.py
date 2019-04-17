@@ -187,7 +187,7 @@ plt.colorbar()
 
 
 mapper = km.KeplerMapper(verbose=1)
-custom_tooltips=np.array([f"<img src='./Figures/{chembl_id}.svg'>" for chembl_id in sub_df["CMP_CHEMBL_ID"]])
+
 graph = mapper.map(transformed_data,
                    X=sq_distance_matrix,
                    precomputed=True,

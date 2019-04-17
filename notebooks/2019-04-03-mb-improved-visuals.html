@@ -15156,7 +15156,7 @@ Wrote visualization to: 2019-04-03-mb-improved-visuals-map.html
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">mapper</span> <span class="o">=</span> <span class="n">km</span><span class="o">.</span><span class="n">KeplerMapper</span><span class="p">(</span><span class="n">verbose</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
-<span class="n">custom_tooltips</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">f</span><span class="s2">&quot;&lt;img src=&#39;./Figures/</span><span class="si">{chembl_id}</span><span class="s2">.svg&#39;&gt;&quot;</span> <span class="k">for</span> <span class="n">chembl_id</span> <span class="ow">in</span> <span class="n">sub_df</span><span class="p">[</span><span class="s2">&quot;CMP_CHEMBL_ID&quot;</span><span class="p">]])</span>
+
 <span class="n">graph</span> <span class="o">=</span> <span class="n">mapper</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="n">transformed_data</span><span class="p">,</span>
                    <span class="n">X</span><span class="o">=</span><span class="n">sq_distance_matrix</span><span class="p">,</span>
                    <span class="n">precomputed</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
